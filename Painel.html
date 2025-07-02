@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Painel MD3 Network</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="auth.js" defer></script>
+  <script src="script.js" defer></script>
+  <style>
+    /* ... seu CSS existente ... */
+
+    /* Novo CSS para elementos desabilitados */
+    .admin-only.disabled {
+      opacity: 0.4; /* Deixa o elemento semi-transparente */
+      pointer-events: none; /* Impede cliques e interações */
+      cursor: not-allowed; /* Muda o cursor para "proibido" */
+    }
+
+    /* Outros ajustes visuais para botões desabilitados na tabela, se necessário */
+    .tabela-btn-admin.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+        cursor: not-allowed;
+    }
+
+    #tela-login, #tela-cadastro {
+      max-width: 350px;
+      margin: 80px auto;
+      background: #000;
+      border: 2px solid #0f0;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+    #tela-cadastro { display: none; }
+    .link-troca {
+      color: #00ffff;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 15px;
+      display: inline-block;
+    }
+    .painel-superior {
+      display: flex;
+      justify-content: space-between;
+    }
+    .painel-esquerdo, .painel-direito {
+      width: 48%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #0f0;
+    }
+    th, td {
+      text-align: center;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="tela-login">
+  <h2>Login</h2>
+  <input type="text" id="login-user" placeholder="Usuário"><br>
+  <input type="password" id="login-pass" placeholder="Senha"><br>
+  <button id="btn-login">Entrar</button>
+  <p id="login-erro" style="color:red;"></p>
+  <p><span id="btn-redefinir" class="link-troca">Redefinir senha</span></p>
+  <p><span id="link-cadastro" class="link-troca">Não tem conta? Cadastre-se</span></p>
+</div>
+
+<div id="tela-cadastro">
+  <h2>Cadastro de Acesso</h2>
+  <input type="text" id="cad-user" placeholder="Novo usuário"><br>
+  <input type="password" id="cad-pass" placeholder="Senha"><br>
+  <input type="password" id="cad-pass2" placeholder="Confirme a senha"><br>
+  <button id="btn-cadastrar">Cadastrar</button>
+  <p id="cad-erro" style="color:red;"></p>
+  <p><span id="link-login" class="link-troca">Já tem conta? Fazer login</span></p>
+</div>
+
+<div id="painel-geral" style="display: none;">
+  <div class="topo">
+    <h1>PAINEL MD3 NETWORK</h1>
+    <p>COMUNIDADE PRO ELITE</p>
+  </div>
+
+  <button id="btn-logout">Logout</button>
+
+  <div class="painel-superior">
+    <div class="painel-esquerdo">
+      <div id="destaque-mes">
+        <h3>Destaque do Mês</h3>
+        <div id="jogador-destaque">
+          <p><strong>Nome:</strong> <span id="destaque-nome">-</span> 🥇</p>
+          <p><strong>Posição:</strong> <span id="destaque-posicao">-</span></p>
+          <p><strong>Troféus:</strong> <span id="destaque-trofeus">0</span></p>
+        </div>
+      </div>
+
+      <button id="addPlayerBtn" class="admin-only">Adicionar Jogador</button>
+      <input type="text" id="filtro-nome" placeholder="Filtrar por nome" />
+      <select id="filtro-posicao">
+        <option value="">Todas as posições</option>
+        <option value="goleiro">Goleiro</option>
+        <option value="zagueiro">Zagueiro</option>
+        <option value="volante">Volante</option>
+        <option value="ala">Ala</option>
+        <option value="meia">Meia</option>
+        <option value="atacante">Atacante</option>
+      </select>
+      <br><br>
+      <button id="limpar-dados" class="admin-only">🧹 Limpar Dados</button>
+      <button id="exportar-dados" class="admin-only">📤 Exportar Dados</button>
+      <button id="btn-importar" class="admin-only">📥 Importar Dados</button>
+      <input type="file" id="importar-dados" style="display: none;" accept=".json" class="admin-only" />
+    </div>
+
+    <div id="painel-conquistas" class="painel-direito">
+      <h2>📊 CONQUISTAS – <span id="mesAno">JUNHO 2025</span>
+        <button id="alterar-mes-ano" class="admin-only">🛠 Alterar</button>
+      </h2>
+      <ul>
+        <li class="conquista-item"><div class="conquista-esquerda">🏆 Campeão da MD3 início <span class="data">02/06</span></div><button class="btn-alterar-data admin-only">Alterar Data</button></li>
+        <li class="conquista-item"><div class="conquista-esquerda">🏅 Ganhadores da MD3 Marcello <span class="data">04/06</span></div><button class="btn-alterar-data admin-only">Alterar Data</button></li>
+        <li class="conquista-item"><div class="conquista-esquerda">🏅 Ganhadores da votação iStrawl <span class="data">07/06</span></div><button class="btn-alterar-data admin-only">Alterar Data</button></li>
+        <li class="conquista-item"><div class="conquista-esquerda">💪 Capitães campeões das MD3 <span class="data">02/06</span></div><button class="btn-alterar-data admin-only">Alterar Data</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="formulario-jogador" style="display:none;" class="admin-only">
+    <h3>Adicionar Jogador</h3>
+    <form id="form-jogador">
+      <label>Nome:</label><br />
+      <input type="text" id="nome" required /><br />
+      <label>Posições:</label><br />
+      <div id="posicoes-container">
+        <label><input type="checkbox" name="posicao" value="goleiro" /> goleiro</label><br />
+        <label><input type="checkbox" name="posicao" value="zagueiro" /> zagueiro</label><br />
+        <label><input type="checkbox" name="posicao" value="volante" /> volante</label><br />
+        <label><input type="checkbox" name="posicao" value="ala" /> ala</label><br />
+        <label><input type="checkbox" name="posicao" value="meia" /> meia</label><br />
+        <label><input type="checkbox" name="posicao" value="atacante" /> atacante</label><br />
+      </div>
+      <label>🏆Troféus:</label><br />
+      <input type="number" id="trofeus" min="0" value="0" /><br />
+      <label>🏅Medalhas:</label><br />
+      <input type="number" id="medalhas" min="0" value="0" /><br />
+      <label>🧠Capitão:</label>
+      <input type="checkbox" id="capitao" /><br /><br />
+      <button type="submit">Adicionar</button>
+      <button type="button" id="cancelar">Cancelar</button>
+    </form>
+  </div>
+
+  <section id="painel">
+    <h2>Jogadores</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Equipe</th>
+          <th>Posições ⬍</th>
+          <th>🏆Troféus</th>
+          <th>🏅Medalhas</th>
+          <th>🧠Capitão</th>
+          <th>🧠Capitão vezes</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-jogadores"></tbody>
+    </table>
+  </section>
+</div>
+
+</body>
+</html>
